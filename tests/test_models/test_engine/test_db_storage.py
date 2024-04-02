@@ -84,7 +84,7 @@ class TestDBStorage(unittest.TestCase):
         models.storage.save()
         session = models.storage._DBStorage__session
         all_obj = session.query(State).all()
-        self.assertTrue(len(all_obj)> 0)
+        self.assertTrue(len(all_obj) > 0)
 
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_new(self):
@@ -93,11 +93,11 @@ class TestDBStorage(unittest.TestCase):
         new_state = State(**state_data)
         models.storage.new(new_state)
         session = models.storage._DBStorage__session
-        ret_state = session.query(State).filter_by(id=new_state).first()
-        
+        ret_state = session.query(State).filter_by(id=new_state.id).first()
+
         self.assertEqual(ret_state.id, new_state.id)
         self.assertEqual(ret_state.name, new_state.name)
-        self.assertEqual(ret_state)
+        self.assertIsNotNone(ret_state)
 
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_save(self):
@@ -107,11 +107,11 @@ class TestDBStorage(unittest.TestCase):
         models.storage.new(new_state)
         models.storage.save()
         session = models.storage._DBStorage__session
-        ret_state = session.query(State).filter_by(id=new_state).first()
-        
+        ret_state = session.query(State).filter_by(id=new_state.id).first()
+
         self.assertEqual(ret_state.id, new_state.id)
         self.assertEqual(ret_state.name, new_state.name)
-        self.assertEqual(ret_state)
+        self.assertIsNotNone(ret_state)
 
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_get(self):
@@ -120,6 +120,8 @@ class TestDBStorage(unittest.TestCase):
         storage.reload()
         state_data = {"name": "Taza"}
         state_instance = State(**state_data)
+        storage.new(state_instance)
+        storage.save()
         ret_state = storage.get(State, state_instance.id)
         self.assertEqual(state_instance, ret_state)
         fk_state_id = storage.get(State, 'fake_id')
@@ -132,7 +134,7 @@ class TestDBStorage(unittest.TestCase):
         state_data = {"name": "Safi"}
         state_instance = State(**state_data)
         storage.new(state_instance)
-        city_data = {"name": "Anassi","state_id":state_instance.id}
+        city_data = {"name": "Anassi", "state_id": state_instance.id}
         city_instance = City(**city_data)
         storage.new(city_instance)
         storage.save()

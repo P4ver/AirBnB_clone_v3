@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 """ Test .get() and .count() methods
 """
 from models import storage
